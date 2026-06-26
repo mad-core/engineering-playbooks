@@ -14,13 +14,14 @@ from .._manifest import (
 from ..generators import ALL, SKELETON
 from .adapt import gen_adapt
 from .bootstrap import gen_bootstrap
+from .init_scaffold import gen_init_scaffold
 from .lint import gen_lint
 from .migrate import gen_migrate
 
 _INIT_HINT = (
     f"error: {MANIFEST_REL} not found — this repo is not initialized for "
     "living-docs.\n"
-    "       Run /init-docs to scaffold the manifest (COPE-143), or "
+    "       Run /init-docs to scaffold the manifest, or "
     "`gen_docs bootstrap --contract <path>` with a contract template."
 )
 
@@ -31,13 +32,14 @@ def main() -> int:
             "Manifest-driven /docs generators. Every layout decision is read "
             f"from {MANIFEST_REL}; nothing about a stack or a contract is "
             "hardcoded in this engine.\n\n"
-            "Subcommands: all, bootstrap, migrate, adapt, lint, "
-            + ", ".join(ALL.keys())
+            "Subcommands: all, bootstrap, init-scaffold, migrate, adapt, "
+            "lint, " + ", ".join(ALL.keys())
         )
     )
     p.add_argument(
         "command",
-        choices=["all", "bootstrap", "migrate", "adapt", "lint", *ALL.keys()],
+        choices=["all", "bootstrap", "init-scaffold", "migrate", "adapt",
+                 "lint", *ALL.keys()],
     )
     p.add_argument("--repo", default=".", help="repo root (default: cwd)")
     p.add_argument("--service", default=None,
@@ -46,7 +48,18 @@ def main() -> int:
                    help="path to a contract/template manifest — required by "
                         "`bootstrap` and `migrate` (no contract is bundled)")
     p.add_argument("--force", action="store_true",
-                   help="overwrite the manifest if it already exists (bootstrap)")
+                   help="overwrite existing files (bootstrap manifest / "
+                        "init-scaffold workflow drops)")
+    p.add_argument("--workflow-templates", default=None,
+                   help="path to the workflow caller templates dir whose "
+                        "`*.yml` init-scaffold drops into `.github/workflows/` "
+                        "(no templates are bundled in this engine)")
+    p.add_argument("--github-org", default="mad-core",
+                   help="GitHub org for the marketplace repo (init-scaffold)")
+    p.add_argument("--marketplace", default="360hd",
+                   help="marketplace name to enable (init-scaffold)")
+    p.add_argument("--plugin", default="living-docs",
+                   help="plugin to enable in the target repo (init-scaffold)")
     p.add_argument("--dry-run", action="store_true",
                    help="show the plan without writing the manifest (migrate)")
     p.add_argument("--base", default=None,
@@ -71,6 +84,18 @@ def main() -> int:
             return 2
         return gen_bootstrap(repo, Path(args.contract).resolve(),
                              service=args.service, force=args.force)
+
+    # init-scaffold drops onboarding files (settings + workflow callers); it
+    # likewise needs no existing manifest. The deterministic core /init-docs
+    # wraps.
+    if args.command == "init-scaffold":
+        templates = (Path(args.workflow_templates).resolve()
+                     if args.workflow_templates else None)
+        return gen_init_scaffold(
+            repo, templates,
+            marketplace=args.marketplace, plugin=args.plugin,
+            github_org=args.github_org, force=args.force,
+        )
 
     # Everything else is driven by the repo's own manifest.
     manifest = load_manifest(repo)

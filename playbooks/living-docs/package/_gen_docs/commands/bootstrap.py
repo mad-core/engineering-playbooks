@@ -20,7 +20,7 @@ def gen_bootstrap(
     """Create `docs/.docs-manifest.yaml` from a caller-supplied contract.
 
     No contract template is bundled in this engine — the path to one is
-    passed in (e.g. by the /init-docs flow, COPE-143). Returns an exit code.
+    passed in (e.g. by the /init-docs flow). Returns an exit code.
     """
     yaml = _yaml_module()
     _install_literal_str_representer(yaml)

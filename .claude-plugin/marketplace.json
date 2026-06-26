@@ -9,7 +9,7 @@
     {
       "name": "living-docs",
       "source": "./playbooks/living-docs",
-      "description": "Living-documentation phase — the deterministic docs engine (gen_docs) plus the skill that fills and updates a repo's structured /docs tree from the code."
+      "description": "Living-documentation phase — the deterministic docs engine (gen_docs) plus the init-docs (onboard a repo, scaffold the manifest) and generate-docs (fill/update) skills that keep a repo's structured /docs tree alive against the code."
     }
   ]
 }

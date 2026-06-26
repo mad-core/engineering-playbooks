@@ -1,0 +1,17 @@
+# Thin caller for the org-wide docs-validate reusable workflow.
+# Dropped into a target repo's .github/workflows/ by /init-docs.
+# The doubled `.github/.github/` path is correct: the reusable lives in the
+# repo named `.github`, under its own `.github/workflows/` directory.
+# Adjust the `branches` list to match the target repo's branch model.
+name: docs-validate
+
+on:
+  pull_request:
+    branches: [develop, main]   # adjustable per repo
+
+jobs:
+  docs-validate:
+    uses: mad-core/.github/.github/workflows/docs-validate.reusable.yml@main
+    with:
+      service_slug: ${{ vars.SERVICE_SLUG }}
+    secrets: inherit

@@ -42,7 +42,7 @@ Before anything else, check for `docs/.docs-manifest.yaml`:
 
 - **If it is missing → STOP.** This skill does **not** bootstrap, scaffold, or
   set up a docs structure. Tell the user to run **`/init-docs`** first (the
-  onboarding/init flow, COPE-143), which writes the manifest from a contract.
+  onboarding/init flow), which writes the manifest from a contract.
   Do not run `gen_docs bootstrap` yourself and do not invent a manifest.
 - Confirm you are on a **ticket branch**, not `main`/`develop`. If you are on a
   protected branch, ask (via `AskUserQuestion`) before creating one.

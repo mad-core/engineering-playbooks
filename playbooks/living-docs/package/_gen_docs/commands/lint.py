@@ -163,8 +163,8 @@ def gen_lint(
     """Classify every manifest entry; return exit code (0 = OK, 1 = errors)."""
     manifest = load_manifest(repo)
     if manifest is None:
-        print(f"error: {MANIFEST_REL} not found — run /init-docs to scaffold it "
-              "(COPE-143), or `gen_docs bootstrap --contract <path>`.",
+        print(f"error: {MANIFEST_REL} not found — run /init-docs to scaffold it, "
+              "or `gen_docs bootstrap --contract <path>`.",
               file=sys.stderr)
         return 2
 

@@ -9,7 +9,7 @@ Claude Code (and Cowork), discoverable through the marketplace defined in
 
 | Playbook | Purpose |
 |---|---|
-| [`living-docs`](playbooks/living-docs) | Living-documentation phase — the deterministic docs engine (`gen_docs`) plus the `generate-docs` skill that fills and keeps a repo's structured `/docs` tree alive against the code. |
+| [`living-docs`](playbooks/living-docs) | Living-documentation phase — the deterministic docs engine (`gen_docs`) plus two skills: `init-docs` (onboard a repo: scaffold `docs/.docs-manifest.yaml` from a contract and drop the CI callers) and `generate-docs` (fill/update the `/docs` tree from the code). |
 
 ## Consuming `living-docs`
 

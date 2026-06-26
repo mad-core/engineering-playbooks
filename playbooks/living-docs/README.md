@@ -1,11 +1,12 @@
 # `living-docs`
 
-Living-documentation phase for Mad engineering — generate and keep a structured, faithful `/docs` tree alive against the code. This playbook bundles two things:
+Living-documentation phase for Mad engineering — generate and keep a structured, faithful `/docs` tree alive against the code. This playbook bundles the whole phase:
 
 1. **The docs engine** — a deterministic, **contract-agnostic** Python package (`gen_docs`) that runs only the generators a repo's `docs/.docs-manifest.yaml` declares (source/test trees, an OpenAPI dump, scripts, changelog, config/CI skeletons, …) and lints the result. No stack, layout, or section list is hardcoded.
-2. **The fill/update skill** — `generate-docs`, which reads the manifest, runs the engine, and authors/updates the non-scriptable sections as pure Markdown, then opens an agent-generated PR (never merges to `main`).
+2. **The onboarding skill** — `init-docs` (`/init-docs`), which makes a target repo docs-ready: it enables the plugin, copies the manifest skeleton from the matching **contract**, drops the docs CI caller workflows, and prints the secrets/vars checklist. It authors **no** content.
+3. **The fill/update skill** — `generate-docs`, which reads the manifest, runs the engine, and authors/updates the non-scriptable sections as pure Markdown, then opens an agent-generated PR (never merges to `main`).
 
-> **Scope.** This playbook is the docs **engine + fill/update skill** only — it documents a repo that is **already initialized** (i.e. already has `docs/.docs-manifest.yaml`). Bootstrapping/onboarding that manifest (the `init` flow, the documentation contract, and workflow templates) lives in a **separate** playbook — see COPE-143. If the manifest is missing, the skill stops and points you to `/init-docs`.
+> **Two skills, two phases.** `/init-docs` *initializes* a repo (writes `docs/.docs-manifest.yaml` from a contract, leaves it scaffolded-but-undocumented); `generate-docs` *fills* an already-initialized repo. If the manifest is missing, `generate-docs` stops and points you to `/init-docs`. The contracts (`contracts/`) and the CI caller templates (`workflow-templates/`) ship with this playbook.
 
 ## What it does
 
@@ -21,12 +22,13 @@ Idempotent: the first run documents the repo from scratch; reruns diff against e
 
 ## When to use it
 
-- "generate docs", "regenerate `/docs`", "update the docs", "fill the docs structure", "documentar el repo".
-- Producing the agent-generated documentation PR for any already-initialized repo.
+- **Onboarding** (`/init-docs`): "init docs", "set up living docs", "make this repo docs-ready", "onboard a repo to docs" — run once per repo, before any content exists.
+- **Fill/update** (`generate-docs`): "generate docs", "regenerate `/docs`", "update the docs", "fill the docs structure", "documentar el repo" — produces the agent-generated documentation PR for an already-initialized repo.
 
 ## Inputs
 
-- The target repo, checked out on the ticket branch (not `main`), **with an existing `docs/.docs-manifest.yaml`** (created by `/init-docs`, COPE-143).
+- **`/init-docs`**: the target repo (any state) — it detects the area, picks the matching `contracts/<area>.yaml`, and writes the first manifest skeleton.
+- **`generate-docs`**: the target repo, checked out on the ticket branch (not `main`), **with an existing `docs/.docs-manifest.yaml`** (created by `/init-docs`).
 
 ## Outputs
 
@@ -37,8 +39,8 @@ Idempotent: the first run documents the repo from scratch; reruns diff against e
 
 ## How to invoke it
 
-- In a Claude Code (or Cowork) session, trigger the skill by intent: `generate docs`, `regenerate /docs`, `update the docs`.
-- The skill drives the bundled `gen_docs` console command for the deterministic passes.
+- In a Claude Code (or Cowork) session, trigger by intent: `init docs` / `make this repo docs-ready` (onboarding) or `generate docs` / `regenerate /docs` / `update the docs` (fill).
+- Both skills drive the bundled `gen_docs` console command for their deterministic passes (`init-scaffold` + `bootstrap` for onboarding; `all` + `lint` for fill).
 
 ## The docs engine (`gen_docs`)
 
@@ -68,6 +70,7 @@ Each generator writes to the `path` its manifest entry declares — the table be
 | `changelog` | recent history from `git log` | deterministic |
 | `config` / `ci-cd` | settings keys / CI job structure | skeleton (TODO prose) |
 | `bootstrap` / `migrate` | create / reconcile the manifest from a `--contract` template | manifest lifecycle |
+| `init-scaffold` | enable the plugin in `.claude/settings.json` + drop the CI caller workflows | onboarding (used by `/init-docs`) |
 | `adapt` / `lint` | fill repo-specific manifest fields / dispatch work | manifest lifecycle |
 
 ## Target tool
@@ -79,5 +82,6 @@ Each generator writes to the `path` its manifest entry declares — the table be
 
 - **Manifest-driven, pure Markdown, faithful, deterministic** — the repo is the single source of truth for content; the manifest is the single source of truth for structure; a downstream pipeline owns presentation. See [`skills/generate-docs/SKILL.md`](skills/generate-docs/SKILL.md) for the full process, frontmatter, and filling rules.
 - **Never merges to `main`** — scope ends at an agent-generated PR; delivery and drift detection are separate tickets.
-- **Init is separate** — this playbook never bootstraps a structure; `/init-docs` (COPE-143) owns the contract and the first manifest.
+- **Init and fill are distinct** — `/init-docs` owns onboarding (the contract and the first manifest skeleton); `generate-docs` owns authoring. `generate-docs` never bootstraps a structure — if the manifest is missing it stops and points to `/init-docs`.
+- **Contracts are one-file-per-area** — adding a new area (frontend/infra/etl) is a new `contracts/<area>.yaml`, no code change. Only `backend` exists today. See [`contracts/README.md`](contracts/README.md).
 - **Versioning** is automated via release-please — never hand-edit `version` in `.claude-plugin/plugin.json`.
