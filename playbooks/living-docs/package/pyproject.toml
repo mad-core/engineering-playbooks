@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "360hd-gen-docs"
+version = "0.1.0"
+description = "Mad living-docs engine — deterministic /docs generators and linter (gen_docs console command)"
+requires-python = ">=3.11"
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+gen_docs = "_gen_docs.commands.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["_gen_docs*"]

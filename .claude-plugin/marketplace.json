@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-plugin-marketplace",
+  "name": "mad-core",
+  "owner": {
+    "name": "Mad"
+  },
+  "description": "Catalog of cross-cutting engineering playbooks for Mad. Each entry is a documented process packaged as a plugin for Claude Code and Cowork.",
+  "plugins": [
+    {
+      "name": "living-docs",
+      "source": "./playbooks/living-docs",
+      "description": "Living-documentation phase — the deterministic docs engine (gen_docs) plus the skill that fills and updates a repo's structured /docs tree from the code."
+    }
+  ]
+}
