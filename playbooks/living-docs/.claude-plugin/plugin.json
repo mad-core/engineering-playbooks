@@ -1,7 +1,7 @@
 {
   "name": "living-docs",
   "description": "Living documentation phase for Mad engineering — generate and keep a structured, faithful /docs tree alive against the code. Bundles the deterministic docs engine (the gen_docs generators + linter), the init-docs skill that scaffolds the docs manifest, and the generate-docs skill that fills and updates the docs from the repo.",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "author": {
     "name": "Mad"
   }
