@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "include-component-in-tag": true,
+  "separate-pull-requests": true,
+  "packages": {
+    "playbooks/living-docs": {
+      "release-type": "simple",
+      "component": "living-docs",
+      "package-name": "living-docs",
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": ".claude-plugin/plugin.json",
+          "jsonpath": "$.version"
+        },
+        "package/pyproject.toml"
+      ]
+    }
+  }
+}
